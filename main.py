@@ -4,27 +4,33 @@ from bs4 import BeautifulSoup
 URL = 'https://en.wikipedia.org/wiki/Facebook'
 
 
-def lenovo_crawler(max_pages):
-    page = 1
-    while page <= max_pages:
+class WikiGatherer:
 
-        source_code = requests.get(URL)
+    def __init__(self, url):
+        self.url = url
+        self.links = set()
+
+    def wikipedia_crawler(self):
+
+        source_code = requests.get(self.url)
         plain_text = source_code.text
         soup = BeautifulSoup(plain_text, features="lxml")
         count = 0
         for link in soup.findAll('a', {'class': 'external text'}):
             href = link.get('href')
-            print(str(count) + href + '\n')
+            if href[:2] == '//':
+                href = href[2:]
+            print(str(count) + ". " + href + '\n')
+            self.links.add(href)
             count += 1
-        page += 1
+        # print(len(sources))
+
+    def get_single_site_data(self):
+        for link in self.links:
+            source_code = requests.get(link)
+            plain_text = source_code.text
+            soup = BeautifulSoup(plain_text, features="lxml")
 
 
-def get_single_item_data(item_url):
-    source_code = requests.get(item_url)
-    plain_text = source_code.text
-    soup = BeautifulSoup(plain_text, features="lxml")
-    for item_price in soup.findAll('a', {'class': "price-current"}):
-        print(item_price)
-
-
-lenovo_crawler(2)
+if __name__ == '__main':
+    crawl = WikiGatherer(URL)
