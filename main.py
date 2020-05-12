@@ -1,21 +1,22 @@
 import requests
 from bs4 import BeautifulSoup
 
-URL = "https://www.lenovo.com/us/en/outletus/laptops/c/LAPTOPS?q=%3Aprice-asc%3AfacetSys-Condition%3ANew%3AfacetSys-Condition%3ARefurbished%3AfacetSys-Memory%3A16+GB%3AfacetSys-Memory%3A8+GB%3AfacetSys-HardDrive%3A1+TB%3AfacetSys-HardDrive%3A512+GB+Solid+State%3AfacetSys-Processor%3AIntel%C2%AE+Core%E2%84%A2+i7&uq=&text=#"
+URL = 'https://en.wikipedia.org/wiki/Facebook'
 
 
-def lenovo_crawler(url):
+def lenovo_crawler(max_pages):
+    page = 1
+    while page <= max_pages:
 
-    source_code = requests.get(url)
-    plain_text = source_code.text
-    soup = BeautifulSoup(plain_text, features='lxml')
-    print("souped")
-    for link in soup.findAll('a', {"class": "facetedResults-title"}):
-        print('run')
-        href = "lenovo.com" + link.get('href')
-        # get_single_item_data(href)
-        print(href)
-        print('========================================')
+        source_code = requests.get(URL)
+        plain_text = source_code.text
+        soup = BeautifulSoup(plain_text, features="lxml")
+        count = 0
+        for link in soup.findAll('a', {'class': 'external text'}):
+            href = link.get('href')
+            print(str(count) + href + '\n')
+            count += 1
+        page += 1
 
 
 def get_single_item_data(item_url):
@@ -26,5 +27,4 @@ def get_single_item_data(item_url):
         print(item_price)
 
 
-lenovo_crawler(URL)
-
+lenovo_crawler(2)
