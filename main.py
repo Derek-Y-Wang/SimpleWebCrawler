@@ -8,7 +8,7 @@ class WikiGatherer:
 
     def __init__(self, url):
         self.url = url
-        self.links = []
+        self.links = set()
         self.bad = []
 
     def wikipedia_crawler(self):
@@ -21,7 +21,7 @@ class WikiGatherer:
             if href[:2] == '//':
                 href = href[2:]
             print(str(count) + ". " + href + '\n')
-            self.links.append(href)
+            self.links.add(href)
             count += 1
         # print(len(sources))
 
@@ -38,7 +38,47 @@ class WikiGatherer:
             count += 1
 
 
+class PERatio:
 
-crawl = WikiGatherer(URL)
-crawl.wikipedia_crawler()
-crawl.get_single_site_data()
+    def __init__(self, stock_code):
+        self.stock_code = stock_code
+        self.source = "https://ca.finance.yahoo.com/quote/" + \
+                      stock_code.upper() + "?p=" + stock_code.upper()
+
+    def stock_code_verification(self):
+        """
+        Checks if the stock code is legit
+        :return:
+        """
+        source_code = requests.get(self.source)
+        plain_text = source_code.text
+        soup = BeautifulSoup(plain_text, features="lxml")
+        for code in soup.findAll('span', {
+            'class': 'D(b) Ta(c) W(100%) Fz(m) C($c-fuji-grey-j) Mb(10px) Fw(500) Ell'}):
+            if 'No results for' in code.string:
+                return False
+        return True
+
+    def finance_crawler(self):
+        if not self.stock_code_verification():
+            return "No result for " + self.stock_code
+        p = " "
+        e = " "
+        source_code = requests.get(self.source)
+        plain_text = source_code.text
+        soup = BeautifulSoup(plain_text, features="lxml")
+
+        for string in soup.findAll('span', {'class':
+                                            'Trsdu(0.3s) Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(b)'}):
+            p = string.string
+            print("p="+p)
+
+        e = soup.findAll('span', {'class': 'Trsdu(0.3s)'})[12].string
+        print("e="+e)
+
+        return float(p) / float(e)
+
+
+a = PERatio('TSLA')
+print(a.stock_code_verification())
+print(a.finance_crawler())
