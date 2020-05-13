@@ -69,16 +69,17 @@ class PERatio:
         soup = BeautifulSoup(plain_text, features="lxml")
 
         for string in soup.findAll('span', {'class':
-                                            'Trsdu(0.3s) Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(b)'}):
-            p = string.string
-            print("p="+p)
+                                                'Trsdu(0.3s) Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(b)'}):
+            p = string.string.replace(",", '')
+            print("p=" + p)
 
-        e = soup.findAll('span', {'class': 'Trsdu(0.3s)'})[12].string
-        print("e="+e)
+        e = soup.findAll('span', {'class': 'Trsdu(0.3s)'})[12].string.replace(
+            ",", '')
+        print("e=" + e)
 
         return float(p) / float(e)
 
 
-a = PERatio('TSLA')
+a = PERatio('GOOG')
 print(a.stock_code_verification())
 print(a.finance_crawler())
