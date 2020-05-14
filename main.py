@@ -77,9 +77,27 @@ class PERatio:
             ",", '')
         print("e=" + e)
 
-        return float(p) / float(e)
+        ratio = float(p) / float(e)
+        if ratio < 0:
+            return 0
+        return ratio
 
 
-a = PERatio('GOOG')
+class AmazonCrawler:
+    def __init__(self, url):
+        self.url = url
+
+    def simple_crawl(self):
+        source_code = requests.get(self.url)
+        plain_text = source_code.text
+        soup = BeautifulSoup(plain_text, features="lxml")
+        for link in soup.findAll('a'):
+            href = link.string
+            print(href)
+
+a = PERatio('TLSA')
 print(a.stock_code_verification())
 print(a.finance_crawler())
+
+b = AmazonCrawler('https://www.amazon.ca/s?k=gaming+mouse&ref=nb_sb_noss_2')
+b.simple_crawl()
